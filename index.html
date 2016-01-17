@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>визначати витрати, пов’язані з виготовленням та збутом продукції; обчислювати суму прибутку; суму ПДВ; оптову
+        та відпускну ціну продукції.</title>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="app/css/styles.css"/>
+</head>
+<body ng-controller="MainCtrl">
+
+<div class="row">
+    <div class="col-md-9">
+        <div class="row">
+            <h1>Матеріальні витрати</h1>
+            <h5>Стаття 1 «Матеріальні витрати» містить витрати та сировину, основні, допоміжні матеріали, закуплені
+                вироби,
+                тобто
+                витрати, які можна безпосередньо обчислити на одиницю продукції на підставі витратних норм і цін. Крім
+                ціни
+                матеріалів, ураховуються транспортно-заготівельні витрати. </h5>
+
+            <div class="col-md-4">
+                <div material-form></div>
+            </div>
+            <div class="col-md-8">
+                <table class="table">
+                    <tr>
+                        <th>Найменування матеріалів</th>
+                        <th>Кількість, шт.</th>
+                        <th>Ціна за одиницю, грн.</th>
+                        <th>Вартість, грн.</th>
+                    </tr>
+                    <tr ng-repeat="product in products">
+                        <td>
+                            <div ng-hide="product.editable"> {{ product.name }}</div>
+                            <div ng-show="product.editable">
+                                <input type="text" ng-model="product.name" value="{{ product.name }}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div ng-hide="product.editable"> {{ product.count }}</div>
+                            <div ng-show="product.editable">
+                                <input type="text" ng-model="product.count" value="{{ product.count }}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div ng-hide="product.editable"> {{ product.countOne }}</div>
+                            <div ng-show="product.editable">
+                                <input type="text" ng-model="product.countOne" value="{{ product.countOne }}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div> {{ product.price | fNAN }}</div>
+                        </td>
+                        <td>
+                            <button ng-hide="product.editable" class="btn btn-primary"
+                                    ng-click="product.editable = true">Ред
+                            </button>
+                            <button ng-show="product.editable" class="btn btn-primary"
+                                    ng-click="editProduct($index, product)">Сохранить
+                            </button>
+                        </td>
+                        <td ng-hide="product.editable">
+                            <button class="btn btn-primary" ng-click="removeProduct($index)">Удалить</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="row">
+            <h1>Електроенергія</h1>
+            <h5>Стаття 2 „Електроенергія ” включає витрати на енергію, яка безпосередньо використовується в
+                технологічному
+                процесі.
+                Обчислюється за нормами витрат і тарифами на енергію.</h5>
+
+            <div class="col-md-4">
+                <div energy-form></div>
+            </div>
+            <div class="col-md-8">
+                <table class="table">
+                    <tr>
+                        <th>Перелік електроспо<br/>
+                            живачів
+                        </th>
+                        <th>Потужність,<br/> кВт</th>
+                        <th>Тривалість <br/>роботи, год.</th>
+                        <th>Ціна 1 кВт/ год. <br/> електроенергії, грн.</th>
+                        <th>Вартість , грн.</th>
+                    </tr>
+                    <tr ng-repeat="energy in energys">
+                        <td> {{ energy.name }}</td>
+                        <td> {{ energy.power }}</td>
+                        <td> {{ energy.durationWork }}</td>
+                        <td> {{ energy.priceEnergy }}</td>
+                        <td> {{ energy.price | fNAN }}</td>
+                        <td>
+                            <button class="btn btn-primary" ng-click="removeEnergy($index)">Удалить</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="row">
+            <h1>Основна заробітна плата виробників</h1>
+            <h5>Стаття 3 «Основна заробітна плата виробників» містить витрати на оплату праці робітників, безпосередньо
+                зайнятих виготовленням основної продукції. Обчислюється згідно з нормами витрат часу на виконання
+                технологічних операцій і тарифними ставками, або відрядними розцінками.</h5>
+
+            <p>
+                Для розрахунку витрат на основну заробітну плату програміста необхідно знати:
+                - оклад;
+                - кількість робочих днів у місяці;
+                - тривалість робочого дня програміста;
+                - кількість фактично відпрацьованих годин.
+            </p>
+
+            <div class="col-md-4">
+                <div wages-form></div>
+            </div>
+            <div class="col-md-8">
+                тарифна ставка = {{ tariff = _r(salary) / (numWorkDaysMonths * workDay) | fNAN }}<br/>
+                заробітну плату програміста = {{ wages = tariff * workHours | fNAN}}
+                <br/>
+
+                <h3>Додаткова заробітна плата – це оплата відпусток, часу
+                    виконання додаткових функцій.</h3>
+                {{ additionSalary = wages * 12 / 100 | fNAN }}
+            </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="row">
+            <h1>Єдиний соціальний внесок</h1>
+            <h5>Єдиний соціальний внесок визначається у відсотках від суми основної та додаткової зарплати.</h5>
+
+            <div class="col-md-offset-1 col-md-10">
+                ЄСВ = {{ social = ((wages + additionSalary) * 37.28) / 100 | fNAN }}
+            </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="row">
+            <h1>Утримання та експлуатація машин і устаткування</h1>
+            <h5>Стаття 6 «Утримання та експлуатація машин і устаткування» включає амортизаційні відрахування, по
+                основним фондам, витрати на електроенергію, стиснуте повітря, пальне для приведення їх у дію, оплату
+                праці з відповідними відрахуваннями на соціальні потреби робітників, які обслуговують машини (наладчики,
+                електрики, слюсарі). </h5>
+
+            <div class="col-md-offset-1 col-md-10">
+                Витрати на утримання обладнання = {{ costMaintainingEquipment = wages * 0.3 | fNAN }}
+            </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="row">
+            <h1>Загальновиробничі витрати</h1>
+            <h5>Стаття 7 «Загальновиробничі витрати» – це витрати на управління, виробниче й господарське обслуговування
+                в межах цеху.</h5>
+
+            <div class="col-md-offset-1 col-md-10">
+                Загальновиробничі витрати = {{ totalExpenditures = wages * 0.28 | fNAN }}
+            </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="row">
+            <h1>Загальногосподарські витрати</h1>
+            <h5>Статті «Загальновиробничі витрати», «Загальногосподарські витрати» близькі за змістом.</h5>
+
+            <div class="col-md-offset-1 col-md-10">
+                собівартість = {{ totalEconomicCosts = totalExpenditures + costMaintainingEquipment + additionSalary + wages + energysCosts + social | fNAN }}
+            </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="row">
+            <h1>Позавиробничі витрати</h1>
+            <h5>Стаття 9 «Позавиробничі витрати» містить витрати на вивчення ринку, на рекламу та продаж продукції. </h5>
+
+            <div class="col-md-offset-1 col-md-10">
+                позавиробничих витрат = {{ nonManufacturingCosts = totalEconomicCosts * 0.3 | fNAN }}
+            </div>
+        </div>
+
+        <div class="row">
+            <h1>Розрахунок собівартості програми</h1>
+            <table class="table-bordered table">
+                <tr>
+                    <td>Найменування статей калькуляції</td>
+                    <td>Витрати , грн.</td>
+                    <td>Структура, %</td>
+                </tr>
+                <tr>
+                    <td>Матеріальні витрати</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Електроенергія</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Основна заробітна плата виробників</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Додаткова заробітна плата виробників</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Єдиний соціальний внесок</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Утримання та експлуатація машин і устаткування</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Загальновиробничі витрати</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Загальногосподарські витрати</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Позавиробничі витрати</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Повна собівартість</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+    <div class="col-md-3">
+        <div class="result-data">Матеріальні витрати: {{ materialCosts | fNAN }}</div>
+        <div class="result-data">Електроенергія: {{ energysCosts | fNAN }}</div>
+        <div class="result-data">Заробітна плата: {{ wages | fNAN }}</div>
+        <div class="result-data">Додаткова заробітна плата: {{ additionSalary | fNAN }}</div>
+        <div class="result-data">ЄСВ: {{ social | fNAN }}</div>
+        <div class="result-data">Утримання та експлуатація <br/> машин і устаткування: {{ costMaintainingEquipment | fNAN }}</div>
+        <div class="result-data">Загальновиробничі витрати: {{ totalExpenditures | fNAN }}</div>
+        <div class="result-data">собівартість: {{ totalEconomicCosts | fNAN }}</div>
+        <div class="result-data">Позавиробничі витрати: {{ nonManufacturingCosts | fNAN }}</div>
+        <div class="row">
+            <div class="col-md-12">
+                <button ng-click="articlesCosts()">Calc</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="bower_components/mathjs/dist/math.min.js"></script>
+<script src="bower_components/angular/angular.min.js"></script>
+<script src="app/app.js"></script>
+<script src="app/controllers/MainCtrl.js"></script>
+<script src="app/directives/materialDirective.js"></script>
+<script src="app/directives/energyDirective.js"></script>
+<script src="app/directives/salaryDirective.js"></script>
+</body>
+</html>
