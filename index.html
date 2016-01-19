@@ -9,7 +9,7 @@
 </head>
 <body ng-controller="MainCtrl">
 
-<div class="row">
+<div ng-init="initCosts()" class="row">
     <div class="col-md-9">
         <div class="row">
             <h1>Матеріальні витрати</h1>
@@ -31,7 +31,7 @@
                         <th>Ціна за одиницю, грн.</th>
                         <th>Вартість, грн.</th>
                     </tr>
-                    <tr ng-repeat="product in products">
+                    <tr ng-repeat="product in products track by $index">
                         <td>
                             <div ng-hide="product.editable"> {{ product.name }}</div>
                             <div ng-show="product.editable">
@@ -51,7 +51,7 @@
                             </div>
                         </td>
                         <td>
-                            <div> {{ product.price | fNAN }}</div>
+                            <div> {{ product.price }}</div>
                         </td>
                         <td>
                             <button ng-hide="product.editable" class="btn btn-primary"
@@ -92,15 +92,16 @@
                         <th>Ціна 1 кВт/ год. <br/> електроенергії, грн.</th>
                         <th>Вартість , грн.</th>
                     </tr>
-                    <tr ng-repeat="energy in energys">
-                        <td> {{ energy.name }}</td>
+                    <tr ng-repeat="energy in energys track by $index">
+                        <energyTableDirective data="{{ energy }}"></energyTableDirective>
+                        <!--<td> {{ energy.name }}</td>
                         <td> {{ energy.power }}</td>
                         <td> {{ energy.durationWork }}</td>
                         <td> {{ energy.priceEnergy }}</td>
-                        <td> {{ energy.price | fNAN }}</td>
+                        <td> {{ energy.price }}</td>
                         <td>
                             <button class="btn btn-primary" ng-click="removeEnergy($index)">Удалить</button>
-                        </td>
+                        </td>-->
                     </tr>
                 </table>
             </div>
@@ -126,13 +127,13 @@
                 <div wages-form></div>
             </div>
             <div class="col-md-8">
-                тарифна ставка = {{ tariff = _r(salary) / (numWorkDaysMonths * workDay) | fNAN }}<br/>
-                заробітну плату програміста = {{ wages = tariff * workHours | fNAN}}
+                тарифна ставка = {{ tariff = salary / (numWorkDaysMonths * workDay) }}<br/>
+                заробітну плату програміста = {{ wages = tariff * workHours }}
                 <br/>
 
                 <h3>Додаткова заробітна плата – це оплата відпусток, часу
                     виконання додаткових функцій.</h3>
-                {{ additionSalary = wages * 12 / 100 | fNAN }}
+                {{ additionSalary = wages * 12 / 100 }}
             </div>
         </div>
 
@@ -143,7 +144,7 @@
             <h5>Єдиний соціальний внесок визначається у відсотках від суми основної та додаткової зарплати.</h5>
 
             <div class="col-md-offset-1 col-md-10">
-                ЄСВ = {{ social = ((wages + additionSalary) * 37.28) / 100 | fNAN }}
+                ЄСВ = {{ social = ((wages + additionSalary) * 37.28) / 100 }}
             </div>
         </div>
 
@@ -157,7 +158,7 @@
                 електрики, слюсарі). </h5>
 
             <div class="col-md-offset-1 col-md-10">
-                Витрати на утримання обладнання = {{ costMaintainingEquipment = wages * 0.3 | fNAN }}
+                Витрати на утримання обладнання = {{ costMaintainingEquipment = wages * 0.3 }}
             </div>
         </div>
 
@@ -169,7 +170,7 @@
                 в межах цеху.</h5>
 
             <div class="col-md-offset-1 col-md-10">
-                Загальновиробничі витрати = {{ totalExpenditures = wages * 0.28 | fNAN }}
+                Загальновиробничі витрати = {{ totalExpenditures = wages * 0.28 }}
             </div>
         </div>
 
@@ -180,7 +181,7 @@
             <h5>Статті «Загальновиробничі витрати», «Загальногосподарські витрати» близькі за змістом.</h5>
 
             <div class="col-md-offset-1 col-md-10">
-                собівартість = {{ totalEconomicCosts = totalExpenditures + costMaintainingEquipment + additionSalary + wages + energysCosts + social | fNAN }}
+                собівартість = {{ totalEconomicCosts = totalExpenditures + costMaintainingEquipment + additionSalary + wages + energysCosts + social }}
             </div>
         </div>
 
@@ -191,7 +192,7 @@
             <h5>Стаття 9 «Позавиробничі витрати» містить витрати на вивчення ринку, на рекламу та продаж продукції. </h5>
 
             <div class="col-md-offset-1 col-md-10">
-                позавиробничих витрат = {{ nonManufacturingCosts = totalEconomicCosts * 0.3 | fNAN }}
+                позавиробничих витрат = {{ nonManufacturingCosts = totalEconomicCosts * 0.3 }}
             </div>
         </div>
 
@@ -258,15 +259,15 @@
 
     </div>
     <div class="col-md-3">
-        <div class="result-data">Матеріальні витрати: {{ materialCosts | fNAN }}</div>
-        <div class="result-data">Електроенергія: {{ energysCosts | fNAN }}</div>
-        <div class="result-data">Заробітна плата: {{ wages | fNAN }}</div>
-        <div class="result-data">Додаткова заробітна плата: {{ additionSalary | fNAN }}</div>
-        <div class="result-data">ЄСВ: {{ social | fNAN }}</div>
-        <div class="result-data">Утримання та експлуатація <br/> машин і устаткування: {{ costMaintainingEquipment | fNAN }}</div>
-        <div class="result-data">Загальновиробничі витрати: {{ totalExpenditures | fNAN }}</div>
-        <div class="result-data">собівартість: {{ totalEconomicCosts | fNAN }}</div>
-        <div class="result-data">Позавиробничі витрати: {{ nonManufacturingCosts | fNAN }}</div>
+        <div class="result-data">Матеріальні витрати: {{ materialCosts }}</div>
+        <div class="result-data">Електроенергія: {{ energysCosts }}</div>
+        <div class="result-data">Заробітна плата: {{ wages }}</div>
+        <div class="result-data">Додаткова заробітна плата: {{ additionSalary }}</div>
+        <div class="result-data">ЄСВ: {{ social }}</div>
+        <div class="result-data">Утримання та експлуатація <br/> машин і устаткування: {{ costMaintainingEquipment }}</div>
+        <div class="result-data">Загальновиробничі витрати: {{ totalExpenditures }}</div>
+        <div class="result-data">собівартість: {{ totalEconomicCosts }}</div>
+        <div class="result-data">Позавиробничі витрати: {{ nonManufacturingCosts }}</div>
         <div class="row">
             <div class="col-md-12">
                 <button ng-click="articlesCosts()">Calc</button>
@@ -275,12 +276,12 @@
     </div>
 </div>
 
-<script src="bower_components/mathjs/dist/math.min.js"></script>
 <script src="bower_components/angular/angular.min.js"></script>
 <script src="app/app.js"></script>
 <script src="app/controllers/MainCtrl.js"></script>
 <script src="app/directives/materialDirective.js"></script>
 <script src="app/directives/energyDirective.js"></script>
+<script src="app/directives/energyTableDirective.js"></script>
 <script src="app/directives/salaryDirective.js"></script>
 </body>
 </html>

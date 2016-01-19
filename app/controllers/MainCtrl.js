@@ -1,19 +1,48 @@
 app.controller('MainCtrl', ['$scope', function ($scope) {
 
-    $scope.m = math;
+    /**
+     *
+     * @type {Array}
+     */
+    $scope.energys = [
+        {
+            name: 'EOM',
+            power: 0.25,
+            durationWork: 36,
+            priceEnergy: 1.03,
+            price: 9.27,
+            editable: false
+        }
+    ];
+
 
     /**
      *
      * @type {Array}
      */
-    $scope.energys = [];
-
-
-    /**
-     *
-     * @type {Array}
-     */
-    $scope.products = [];
+    $scope.products = [
+        {
+            name: 'Папір',
+            count: 20,
+            countOne: 0.05,
+            price: 1,
+            editable: false
+        },
+        {
+            name: 'Диски',
+            count: 2,
+            countOne: 4.50,
+            price: 9,
+            editable: false
+        },
+        {
+            name: 'Папка-скорозшивач',
+            count: 2,
+            countOne: 2,
+            price: 4,
+            editable: false
+        }
+    ];
 
 
     /**
@@ -25,7 +54,9 @@ app.controller('MainCtrl', ['$scope', function ($scope) {
 
 
     /**
-    @name Електроенергія
+     * @name Електроенергія
+     *
+     * @type {number}
      */
     $scope.energysCosts = 0.00;
 
@@ -110,8 +141,17 @@ app.controller('MainCtrl', ['$scope', function ($scope) {
     $scope.nonManufacturingCosts = 0.00;
 
 
+    angular.element(document).ready(function () {
+        $scope.initCosts();
+    });
+
+    $scope.updateDigest = function () {
+        if ( ! $scope.$$phase) $scope.$digest();
+    };
+
+
     /**
-     *
+     *  @description Матеріальні_та_Електроенергетичнi_витрати
      */
     $scope.initCosts = function () {
 
@@ -128,6 +168,8 @@ app.controller('MainCtrl', ['$scope', function ($scope) {
 
         $scope.articlesCosts();
 
+        $scope.updateDigest();
+
     };
 
     /**
@@ -135,7 +177,7 @@ app.controller('MainCtrl', ['$scope', function ($scope) {
      */
     $scope.articlesCosts = function () {
 
-        $scope.tariff = $scope._r($scope.salary) / ($scope.numWorkDaysMonths * $scope.workDay);
+        $scope.tariff = ($scope.salary) / ($scope.numWorkDaysMonths * $scope.workDay);
         $scope.wages = $scope.tariff * $scope.workHours;
         $scope.additionSalary = $scope.wages * 12 / 100;
         $scope.social = (($scope.wages + $scope.additionSalary) * 37.28) / 100;
@@ -211,6 +253,7 @@ app.controller('MainCtrl', ['$scope', function ($scope) {
         $scope.energysCosts -= $scope.energys[index].price;
         $scope.energys.splice(index, 1);
     };
+
     /**
      *
      */
@@ -238,8 +281,8 @@ app.controller('MainCtrl', ['$scope', function ($scope) {
         $scope.energysCosts += price;
     };
 
-    $scope._r = function (value) {
-        return Math.round(parseFloat(value) * 100) / 100;
+    $scope.countWatchers = function () {
+        console.log($scope.$$watchers.length);
     };
 
 }]);
